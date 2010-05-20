@@ -8,4 +8,6 @@
                    :action view-name } )
 
 (deftest test-view
-  (is (render-view request-map)))
+  (is (render-view request-map nil))
+  (is (render-view request-map {}))
+  (is (render-view request-map { :password "Error test." })))

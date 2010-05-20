@@ -2,4 +2,4 @@
   (:use conjure.binding.base))
 
 (defbinding [request-map]
-  (render-view request-map))
+  (render-view request-map (:errors (:params request-map))))

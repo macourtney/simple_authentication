@@ -2,7 +2,6 @@
   (:use conjure.model.database))
 
 (def records [
-  ; Add your test data here.
   { :id 1
     :name "admin"
     :password "password" 
