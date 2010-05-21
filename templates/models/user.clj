@@ -43,3 +43,8 @@ sequence." }
     (if (verify-password user)
       errors
       (assoc errors :password-verify "The passwords you entered do not match."))))
+
+(defn
+#^{ :doc "Returns the user with the given name and password or nil if no user exists." }
+  find-user [name password]
+  (find-record { :name name, :password password}))

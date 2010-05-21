@@ -5,7 +5,7 @@
 
 (defview [errors]
   (html/html 
-    (if (and errors (not-empty errors))
+    (when (and errors (not-empty errors))
       [:div
         "Please correct the following errors:"
         [:ul
@@ -18,4 +18,4 @@
         [:div "Verify Password:&nbsp;" (password-field {} :user :password-verify)]
         (form-button "Create")
         "&nbsp;"
-        (link-to "Cancel" request-map { :action "login" })))))
+        (link-back "Cancel" request-map)))))
