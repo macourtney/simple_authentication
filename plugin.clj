@@ -82,7 +82,8 @@
     (id)
     (string :name)
     (string :password)
-    (integer :is-admin))"))
+    (integer :is-admin))
+  (insert-into \"" (model-util/model-to-table-name model-name) "\" { :name \"admin\", :password \"password\", :is_admin 1 })"))
 
 (defn migration-down-content []
   (str "(drop-table \"" (model-util/model-to-table-name model-name) "\")"))

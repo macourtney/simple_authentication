@@ -1,14 +1,18 @@
 (ns views.authentication.admin
   (:use conjure.view.base)
   (:require [clj-html.core :as html]
-            [clj-html.helpers :as helpers]))
+            [clj-html.helpers :as helpers]
+            [clojure.contrib.logging :as logging]))
 
 (defn
-  user-row [user]
+  user-row [request-map user]
+  (logging/debug (str "user: " user))
   [:tr
     [:td (helpers/h (:id user))]
     [:td (helpers/h (:name user))]
-    [:td (helpers/h (:is-admin user))]])
+    [:td (helpers/h (if (= (:is_admin user) 0) "no" "yes"))]
+    [:td (link-to "edit" request-map { :action "edit-user", :params { :id user } })]
+    [:td (link-to "delete" request-map { :action "delete-verify", :params { :id user } })]])
 
 (defview [users]
   (html/html 
@@ -18,5 +22,7 @@
         [:tr
           [:th "Id"]
           [:th "Name"]
-          [:th "Is Admin"]]
-        (map user-row users)]]))
+          [:th "Is Admin"]
+          [:th]
+          [:th]]
+        (map #(user-row request-map %1) users)]]))

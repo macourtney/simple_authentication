@@ -15,10 +15,29 @@ incorrect this function returns nil." }
       user)))
 
 (defn
+#^{ :doc "Returns true if the current user is an admin." }
+  is-admin? 
+  ([user] (> (:is_admin user) 0)))
+
+(defn
 #^{ :doc "If the requestor is logged in,m then this function returns the user id. Otherwise, this function returns 
 nil" }
   logged-in? [request-map] 
   (session-key ((:retrieve session-config/session-store) request-map)))
+
+(defmulti current-user type)
+ 
+;(defmethod current-user PersistentMap [request-map]
+;  (current-user (logged-in? request-map))) 
+
+(defmethod current-user String [user-id]
+  (when user-id
+    (user/get-record { :id user-id }))) 
+
+(defmethod current-user Integer [user-id]
+  (when user-id
+    (logging/debug (str "user-id: " user-id)) 
+    (user/get-record user-id)))
 
 (defn
 #^{ :doc "Logs the requestor out." }

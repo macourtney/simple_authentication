@@ -9,7 +9,11 @@
   link-list [request-map]
   (let [user-id (simple-login/logged-in? request-map)]
     (if user-id
-      [{ :text "Log Out", :url-for { :controller :authentication, :action :logout } }]
+      (let [logout-link { :text "Log Out", :url-for { :controller :authentication, :action :logout } }]
+        (if (simple-login/is-admin? (simple-login/current-user user-id))
+          [logout-link 
+           { :text "Admin", :url-for { :controller :authentication, :action :admin } }]
+          [logout-link]))
       [{ :text "Log In", :url-for { :controller :authentication, :action :login } }
        { :text "Create Account", :url-for { :controller :authentication, :action :create-user } }])))
 
@@ -66,8 +70,22 @@
 (defaction admin
   (bind request-map))
 
-(defaction delete-user
+(defaction delete-verify
   (bind request-map))
+
+(defaction delete-user
+  (user/destroy-record { :id (:id (:params request-map)) })
+  (redirect-to request-map { :action "admin" }))
 
 (defaction edit-user
   (bind request-map))
+
+(defaction edit-save
+  (let [params (:params request-map)
+        user (:user params)
+        errors (user/full-verify-user user)]
+    (if (and errors (not-empty errors))
+      (redirect-to request-map { :action "edit-user", :params { :user user, :errors errors } })
+      (do
+        (user/update user)
+        (redirect-to request-map { :action "admin" })))))

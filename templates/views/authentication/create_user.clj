@@ -1,15 +1,12 @@
 (ns views.authentication.create-user
   (:use conjure.view.base)
   (:require [clj-html.core :as html]
-            [clj-html.helpers :as helpers]))
+            [clj-html.helpers :as helpers]
+            [views.authentication.errors :as errors]))
 
 (defview [errors]
   (html/html 
-    (when (and errors (not-empty errors))
-      [:div
-        "Please correct the following errors:"
-        [:ul
-          (map (fn [error] [:li (helpers/h error)]) errors)]])
+    (errors/render-view request-map errors)
     (form-for request-map { :action "save-user" }
       (html/htmli
         [:p "Create a user:"]

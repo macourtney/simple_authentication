@@ -8,4 +8,5 @@
                    :action view-name } )
 
 (deftest test-view
-  (is (render-view request-map)))
+  (is (render-view request-map [] "/"))
+  (is (render-view request-map ["invalid user"] nil)))

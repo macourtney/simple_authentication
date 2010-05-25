@@ -3,7 +3,10 @@
         controllers.authentication-controller)
   (:require [clojure.contrib.logging :as logging]
             [conjure.controller.util :as controller-util]
+            [fixture.user :as user-fixture]
             [models.user :as user]))
+
+(use-fixtures :once user-fixture/fixture)
 
 (def controller-name "authentication")
 (def request-map { :controller controller-name })
@@ -40,4 +43,4 @@
   (is (controller-util/call-controller { :controller controller-name :action "delete-user" })))
 
 (deftest test-edit-user
-  (is (controller-util/call-controller { :controller controller-name :action "edit-user" })))
+  (is (controller-util/call-controller { :controller controller-name, :action "edit-user", :params { :id 1 } })))
