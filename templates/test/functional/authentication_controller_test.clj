@@ -44,3 +44,6 @@
 
 (deftest test-edit-user
   (is (controller-util/call-controller { :controller controller-name, :action "edit-user", :params { :id 1 } })))
+
+(deftest test-access-denied
+  (is (controller-util/call-controller { :controller controller-name, :action "access-denied" })))

@@ -5,14 +5,15 @@
             [views.authentication.errors :as errors]))
 
 (defview [errors]
-  (html/html 
-    (errors/render-view request-map errors)
-    (form-for request-map { :action "save-user" }
-      (html/htmli
-        [:p "Create a user:"]
-        [:div "User Name:&nbsp;" (text-field {} :user :name)]
-        [:div "Password:&nbsp;" (password-field {} :user :password)]
-        [:div "Verify Password:&nbsp;" (password-field {} :user :password-verify)]
-        (form-button "Create")
-        "&nbsp;"
-        (link-back "Cancel" request-map)))))
+  (html/html
+    [:div { :class "article" }
+      (errors/render-view request-map errors)
+      [:h2 "Create a user"]
+      (form-for request-map { :action "save-user" }
+        (html/htmli
+          [:div "User Name:&nbsp;" (text-field {} :user :name)]
+          [:div "Password:&nbsp;" (password-field {} :user :password)]
+          [:div "Verify Password:&nbsp;" (password-field {} :user :password-verify)]
+          (form-button "Create")
+          "&nbsp;"
+          (link-to "Cancel" request-map { :action :login })))]))

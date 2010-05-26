@@ -9,11 +9,15 @@
   link-list [request-map]
   (let [user-id (simple-login/logged-in? request-map)]
     (if user-id
-      (let [logout-link { :text "Log Out", :url-for { :controller :authentication, :action :logout } }]
+      (let [logout-link { :text "Log Out", :url-for { :controller :authentication, :action :logout } }
+            edit-profile-link 
+              { :text "Edit Profile", 
+                :url-for { :controller :authentication, :action :edit-user, :params { :id user-id } } }
+            logged-in-links [logout-link edit-profile-link]]
         (if (simple-login/is-admin? (simple-login/current-user user-id))
-          [logout-link 
-           { :text "Admin", :url-for { :controller :authentication, :action :admin } }]
-          [logout-link]))
+          (cons { :text "Admin", :url-for { :controller :authentication, :action :admin } }
+            logged-in-links) 
+          logged-in-links))
       [{ :text "Log In", :url-for { :controller :authentication, :action :login } }
        { :text "Create Account", :url-for { :controller :authentication, :action :create-user } }])))
 
@@ -89,3 +93,6 @@
       (do
         (user/update user)
         (redirect-to request-map { :action "admin" })))))
+
+(defaction access-denied
+  (bind request-map))

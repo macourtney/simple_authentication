@@ -2,7 +2,8 @@
   (:use conjure.view.base)
   (:require [clj-html.core :as html]
             [clj-html.helpers :as helpers]
-            [clojure.contrib.logging :as logging]))
+            [clojure.contrib.logging :as logging]
+            [plugins.simple-authentication.login :as login]))
 
 (defn
   user-row [request-map user]
@@ -10,13 +11,13 @@
   [:tr
     [:td (helpers/h (:id user))]
     [:td (helpers/h (:name user))]
-    [:td (helpers/h (if (= (:is_admin user) 0) "no" "yes"))]
+    [:td (helpers/h (if (login/is-admin? user) "yes" "no"))]
     [:td (link-to "edit" request-map { :action "edit-user", :params { :id user } })]
     [:td (link-to "delete" request-map { :action "delete-verify", :params { :id user } })]])
 
 (defview [users]
   (html/html 
-    [:div 
+    [:div { :class "article" }
       [:h2 "Current Users"]
       [:table
         [:tr

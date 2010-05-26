@@ -31,12 +31,14 @@
 (def binding-test-directory-name "binding")
 (def views-directory-name "views")
 (def view-test-directory-name "view")
+(def config-directory-name "config")
 
 (def user-model-file-name (str model-name ".clj"))
 (def fixture-file-name (str model-name ".clj"))
 (def model-unit-test-file-name (str model-name "_model_test.clj"))
 (def controller-file-name (str controller-name "_controller.clj"))
 (def controller-test-file-name (str controller-name "_controller_test.clj"))
+(def config-file-name "authentication_config.clj")
 
 (def simple-authentication-dir (plugin-util/plugin-directory (plugin-name)))
 (def templates-directory (file-utils/find-directory simple-authentication-dir templates-directory-name))
@@ -62,12 +64,14 @@
   (file-utils/find-directory template-test-unit-directory view-test-directory-name))
 (def template-test-unit-view-authentication-directory
   (file-utils/find-directory template-test-unit-view-directory authentication-directory-name))
+(def template-config-directory (file-utils/find-directory templates-directory config-directory-name))
 
 (def user-model-file (file-utils/find-file template-models-directory user-model-file-name))
 (def fixture-file (file-utils/find-directory template-test-fixture-directory fixture-file-name))
 (def unit-test-file (file-utils/find-directory template-test-unit-model-directory model-unit-test-file-name))
 (def controller-file (file-utils/find-file template-controllers-directory controller-file-name))
 (def controller-test-file (file-utils/find-file template-test-functional-directory controller-test-file-name))
+(def config-file (file-utils/find-file template-config-directory config-file-name))
 
 (def generated-user-model-file (File. (model-util/find-models-directory) user-model-file-name))
 (def generated-fixture-file (File. (test-builder/find-or-create-fixture-directory false) fixture-file-name))
@@ -76,6 +80,7 @@
 (def generated-controller-file (File. (controller-util/find-controllers-directory) controller-file-name))
 (def generated-controller-test-file 
   (File. (test-builder/find-or-create-functional-test-directory false) controller-test-file-name))
+(def generated-config-file (File. (file-utils/user-directory) (str config-directory-name "/" config-file-name)))
 
 (defn migration-up-content []
   (str "(create-table \"" (model-util/model-to-table-name model-name) "\" 
@@ -181,6 +186,11 @@
   (copy-view-test-directory))
 
 (defn
+#^{ :doc "Copies all of the config files to the appropriate places." }
+  create-config-files []
+  (log-and-copy-file config-file generated-config-file))
+
+(defn
 #^{ :doc "Logs the deletion of the given file." }
   log-and-delete-file [file]
   (logging/info (str "Deleting file: " (.getPath file) "..."))
@@ -275,16 +285,31 @@ given source directory." }
   (delete-view-directory)
   (delete-view-test-directory))
 
+(defn
+#^{ :doc "Deletes all of the generated config files." }
+  destroy-config-files []
+  (log-and-delete-file generated-config-file))
+
+(defn
+#^{ :doc "Returns true if this plugin has likely been installed." }
+  installed? []
+  (.exists generated-config-file))
+
 (defn install [arguments]
   (create-model-files)
   (create-controller-files)
   (create-bindings-files)
-  (create-view-files))
+  (create-view-files)
+  (create-config-files))
 
 (defn uninstall [arguments]
   (destroy-model-files)
   (destroy-controller-files)
   (destroy-bindings-files)
-  (destroy-view-files))
+  (destroy-view-files)
+  (destroy-config-files))
 
-(defn initialize [])
+(defn initialize []
+  (when (installed?)
+    (require 'authentication-config)
+    ((ns-resolve 'authentication-config 'configure))))
