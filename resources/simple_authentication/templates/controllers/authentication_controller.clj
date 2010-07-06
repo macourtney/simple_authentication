@@ -1,13 +1,14 @@
 (ns controllers.authentication-controller
   (:use [conjure.core.controller.base])
   (:require [clojure.contrib.logging :as logging]
+            [conjure.core.server.request :as request]
             [models.user :as user]
             [plugins.simple-authentication.login :as simple-login]))
 
 (defn
 #^{ :doc "Creates the authentication link list based on if the user is logged in or not." }
-  link-list [request-map]
-  (let [user-id (simple-login/logged-in? request-map)]
+  link-list []
+  (let [user-id (simple-login/logged-in?)]
     (if user-id
       (let [logout-link { :text "Log Out", :url-for { :controller :authentication, :action :logout } }
             edit-profile-link 
@@ -21,78 +22,76 @@
       [{ :text "Log In", :url-for { :controller :authentication, :action :login } }
        { :text "Create Account", :url-for { :controller :authentication, :action :create-user } }])))
 
-(defn
+(defmacro
 #^{ :doc "Adds the authentication links to the request-map if they are not already there." }
-  update-request-map [request-map]
-  (if (:links (:layout-info request-map))
-    request-map
-    (assoc request-map :layout-info { :links (link-list request-map) })))
+  update-request-map [& body]
+  (if (:links (request/layout-info))
+    `(do ~@body)
+    `(request/with-merged-request-map { :layout-info { :links (link-list) } }
+      ~@body)))
 
 (defn
 #^{ :doc "Intercepts all authentication requests, and updates the request-map to display the correct actions." }
-  request-map-interceptor [request-map action-fn]
-  (let [new-request-map (update-request-map request-map)] 
-    (action-fn new-request-map)))
+  request-map-interceptor [action-fn]
+  (update-request-map (action-fn)))
 
 (add-interceptor request-map-interceptor)
 
-(defaction index
-  (redirect-to request-map { :action "login" }))
+(def-action index
+  (redirect-to { :action "login" }))
 
-(defaction login
-  (bind request-map))
+(def-action login
+  (bind))
 
-(defaction login-check
-  (let [params (:params request-map)
+(def-action login-check
+  (let [params (request/parameters)
         user (:user params)
         back-link (:back-link params)]
-    (if (simple-login/login request-map (:name user) (:password user))
+    (if (simple-login/login (:name user) (:password user))
       (if back-link
         (redirect-to-full-url back-link)
-        (redirect-to request-map { :controller "home", :action "index" }))
-      (redirect-to request-map 
+        (redirect-to { :controller "home", :action "index" }))
+      (redirect-to
         { :action "login", 
           :params { :back-link back-link, :errors ["User name and password could not be found."] } }))))
 
-(defaction logout
-  (simple-login/logout request-map)
-  (redirect-to request-map { :action "login" }))
+(def-action logout
+  (simple-login/logout)
+  (redirect-to { :action "login" }))
 
-(defaction create-user
-  (bind request-map))
+(def-action create-user
+  (bind))
 
-(defaction save-user
-  (let [params (:params request-map)
-        user (:user params)
+(def-action save-user
+  (let [user (:user (request/parameters))
         errors (user/full-verify-user user)]
     (if (and errors (not-empty errors))
-      (redirect-to request-map { :action "create-user", :params { :user user, :errors errors } })
+      (redirect-to { :action "create-user", :params { :user user, :errors errors } })
       (do
         (user/create user)
-        (redirect-to request-map { :action "login" })))))
+        (redirect-to { :action "login" })))))
 
-(defaction admin
-  (bind request-map))
+(def-action admin
+  (bind))
 
-(defaction delete-verify
-  (bind request-map))
+(def-action delete-verify
+  (bind))
 
-(defaction delete-user
-  (user/destroy-record { :id (:id (:params request-map)) })
-  (redirect-to request-map { :action "admin" }))
+(def-action delete-user
+  (user/destroy-record { :id (request/id) })
+  (redirect-to { :action "admin" }))
 
-(defaction edit-user
-  (bind request-map))
+(def-action edit-user
+  (bind))
 
-(defaction edit-save
-  (let [params (:params request-map)
-        user (:user params)
+(def-action edit-save
+  (let [user (:user (request/parameters))
         errors (user/full-verify-user user)]
     (if (and errors (not-empty errors))
-      (redirect-to request-map { :action "edit-user", :params { :user user, :errors errors } })
+      (redirect-to { :action "edit-user", :params { :user user, :errors errors } })
       (do
         (user/update user)
-        (redirect-to request-map { :action "admin" })))))
+        (redirect-to { :action "admin" })))))
 
-(defaction access-denied
-  (bind request-map))
+(def-action access-denied
+  (bind))

@@ -1,11 +1,16 @@
 (ns unit.model.user-model-test
   (:use clojure.contrib.test-is
-        models.user
-        fixture.user))
+        fixture.user)
+  (:require [conjure.core.server.server :as server]))
+
+(server/init)
+
+(use 'models.user)
 
 (def model "user")
 
 (use-fixtures :once fixture)
+
 
 (deftest test-first-record
   (is (get-record 1)))

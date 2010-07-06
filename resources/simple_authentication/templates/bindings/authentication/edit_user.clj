@@ -1,13 +1,13 @@
 (ns bindings.authentication.edit-user
   (:use conjure.core.binding.base)
   (:require [clojure.contrib.logging :as logging]
+            [conjure.core.server.request :as request]
             [models.user :as user]))
 
-(defbinding [request-map]
-  (let [params (:params request-map)
+(def-binding []
+  (let [params (request/parameters)
         user (:user params)]
-    (logging/debug (str "params: " params))
-    (render-view request-map 
+    (render-view 
       (if user
         (read-string user)
         (user/get-record (:id params))) 

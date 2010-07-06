@@ -14,7 +14,7 @@
 
 (defn
 #^{ :doc "Called right before a user is saved. Makes sure only :id, :user, :password, and :is-admin are in the user." }
-  before-save [user]
+  user-before-save [user]
   (select-keys user [:id :name :password :is_admin]))
 
 (clj-record.core/init-model
@@ -26,7 +26,7 @@
       (str "Password must be at least " minimum-password-length " characters long.")
       (verify-str-length minimum-password-length)))
   (:callbacks
-    (:before-save before-save)))
+    (:before-save user-before-save)))
 
 (defn
 #^{ :doc "Returns true if both password and password-verify are not nil and equal to each other." }

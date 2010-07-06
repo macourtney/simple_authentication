@@ -1,6 +1,7 @@
 (ns unit.view.authentication.create-user-view-test
   (:use clojure.contrib.test-is
-        views.authentication.create-user))
+        views.authentication.create-user)
+  (:require [conjure.core.server.request :as request]))
 
 (def controller-name "authentication")
 (def view-name "create-user")
@@ -8,6 +9,7 @@
                    :action view-name } )
 
 (deftest test-view
-  (is (render-view request-map nil))
-  (is (render-view request-map {}))
-  (is (render-view request-map { :password "Error test." })))
+  (request/set-request-map request-map
+    (is (render-view nil))
+    (is (render-view {}))
+    (is (render-view { :password "Error test." }))))

@@ -1,5 +1,6 @@
 (ns bindings.authentication.create-user
-  (:use conjure.core.binding.base))
+  (:use conjure.core.binding.base)
+  (:require [conjure.core.server.request :as request]))
 
-(defbinding [request-map]
-  (render-view request-map (:errors (:params request-map))))
+(def-binding []
+  (render-view (:errors (request/parameters))))

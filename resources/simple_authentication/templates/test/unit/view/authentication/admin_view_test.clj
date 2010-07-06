@@ -1,7 +1,8 @@
 (ns unit.view.authentication.admin-view-test
   (:use clojure.contrib.test-is
         views.authentication.admin)
-  (:require [fixture.user :as user-fixture]))
+  (:require [fixture.user :as user-fixture]
+            [conjure.core.server.request :as request]))
 
 (def controller-name "authentication")
 (def view-name "admin")
@@ -9,4 +10,5 @@
                    :action view-name } )
 
 (deftest test-view
-  (is (render-view request-map user-fixture/records)))
+  (request/set-request-map request-map
+    (is (render-view user-fixture/records))))

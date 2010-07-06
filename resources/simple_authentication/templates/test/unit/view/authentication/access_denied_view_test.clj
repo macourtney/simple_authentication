@@ -1,6 +1,7 @@
 (ns unit.view.authentication.access-denied-view-test
   (:use clojure.contrib.test-is
-        views.authentication.access-denied))
+        views.authentication.access-denied)
+  (:require [conjure.core.server.request :as request]))
 
 (def controller-name "authentication")
 (def view-name "access-denied")
@@ -8,4 +9,5 @@
                    :action view-name } )
 
 (deftest test-view
-  (is (render-view request-map)))
+  (request/set-request-map request-map
+    (is (render-view))))

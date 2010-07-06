@@ -1,11 +1,10 @@
 (ns views.authentication.errors
   (:use conjure.core.view.base)
-  (:require [clj-html.core :as html]
-            [clj-html.helpers :as helpers]
+  (:require [hiccup.core :as hiccup]
             [clojure.contrib.seq-utils :as seq-utils]))
 
 (defn error-item [error]
-  [:li (helpers/h error)]) 
+  [:li (hiccup/h error)]) 
 
 (defn
 #^{ :doc "Converts the given errors string into an error sequence." }
@@ -14,10 +13,9 @@
     (when (and error-map (map? error-map))
       (seq-utils/flatten (vals error-map))))) 
 
-(defview [errors]
-  (html/html 
-    (when (and errors (not-empty errors))
-      [:div
-        "Please correct the following errors:"
-        [:ul
-          (map error-item (error-list errors))]])))
+(def-view [errors]
+  (when (and errors (not-empty errors))
+    [:div
+      "Please correct the following errors:"
+      [:ul
+        (map error-item (error-list errors))]]))

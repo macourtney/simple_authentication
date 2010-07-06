@@ -1,6 +1,7 @@
 (ns bindings.authentication.delete-verify
   (:use conjure.core.binding.base)
-  (:require [models.user :as user]))
+  (:require [models.user :as user]
+            [conjure.core.server.request :as request]))
 
-(defbinding [request-map]
-  (render-view request-map (user/get-record (:id (:params request-map)))))
+(def-binding []
+  (render-view (user/get-record (request/id-str))))

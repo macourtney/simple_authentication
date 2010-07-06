@@ -1,7 +1,8 @@
 (ns bindings.authentication.login
-  (:use conjure.core.binding.base))
+  (:use conjure.core.binding.base)
+  (:require [conjure.core.server.request :as request]))
 
-(defbinding [request-map]
-  (let [params (:params request-map)
+(def-binding []
+  (let [params (request/parameters)
         errors (:errors params)]
-    (render-view request-map (if errors (read-string errors)) (:back-link params))))
+    (render-view (if errors (read-string errors)) (:back-link params))))
