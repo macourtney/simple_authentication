@@ -329,6 +329,7 @@ given source directory." }
   (destroy-config-files))
 
 (defn initialize []
+  (logging/debug "Initializing simple authentication plugin.")
   (when (installed?)
-    (require 'authentication-config)
-    ((ns-resolve 'authentication-config 'configure))))
+    (require 'config.authentication-config)
+    ((ns-resolve 'config.authentication-config 'configure))))

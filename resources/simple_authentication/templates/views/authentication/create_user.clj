@@ -4,7 +4,7 @@
 
 (def-view [errors]
   [:div { :class "article" }
-    (errors/render-view errors)
+    (errors/render-body errors)
     [:h2 "Create a user"]
     (form-for { :action "save-user" }
       (list

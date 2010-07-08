@@ -6,7 +6,7 @@
 
 (def-view [user errors]
   [:div { :class "article" }
-    (errors/render-view errors)
+    (errors/render-body errors)
     [:h2 (str "Editing " (hiccup/h (:name user)))]
     (form-for { :name "edit-save", :action "edit-save" }
       (list

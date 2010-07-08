@@ -2,7 +2,10 @@
   (:use clojure.contrib.test-is
         views.authentication.edit-user)
   (:require [fixture.user :as user]
-            [conjure.core.server.request :as request]))
+            [conjure.core.server.request :as request]
+            [conjure.core.server.server :as server]))
+
+(server/init)
 
 (def controller-name "authentication")
 (def view-name "edit-user")

@@ -1,4 +1,4 @@
-(ns authentication-config
+(ns config.authentication-config
   (:require [plugins.simple-authentication.authentication-interceptors :as auth-interceptors]))
 
 (defn
