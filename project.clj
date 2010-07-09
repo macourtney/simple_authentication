@@ -1,4 +1,4 @@
-(defproject simple-authentication "1.0.0-SNAPSHOT"
+(defproject simple-authentication "1.0.0-RC1"
   :description "This is a simple authentication plugin for Conjure."
   :dependencies [[org.clojure/clojure "1.1.0"]
                  [org.clojure/clojure-contrib "1.1.0"]
