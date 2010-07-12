@@ -15,7 +15,8 @@
             [conjure.core.util.loading-utils :as loading-utils]
             [conjure.core.view.util :as view-util]
             [conjure.script.destroyers.migration-destroyer :as migration-destroyer]
-            [conjure.script.generators.migration-generator :as migration-generator]))
+            [conjure.script.generators.migration-generator :as migration-generator]
+            [plugins.simple-authentication.password :as password]))
 
 (def model-name "user")
 (def migration-name "create-users")
@@ -95,12 +96,15 @@
                       generated-controller-file generated-controller-test-file generated-config-file])
 
 (defn migration-up-content []
-  (str "(create-table \"" (model-util/model-to-table-name model-name) "\" 
-    (id)
-    (string :name)
-    (string :password)
-    (integer :is-admin))
-  (insert-into \"" (model-util/model-to-table-name model-name) "\" { :name \"admin\", :password \"password\", :is_admin 1 })"))
+  (let [salt (password/create-salt)
+        encrypted-password (password/encrypt-password-string "password" salt)]
+    (str "(create-table \"" (model-util/model-to-table-name model-name) "\" 
+  (id)
+  (string :name)
+  (string :encrypted_password)
+  (string :salt)
+  (integer :is-admin))
+(insert-into \"" (model-util/model-to-table-name model-name) "\" { :name \"admin\", :encrypted_password \"" encrypted-password "\", :salt \"" salt "\" :is_admin 1 })")))
 
 (defn migration-down-content []
   (str "(drop-table \"" (model-util/model-to-table-name model-name) "\")"))

@@ -33,7 +33,9 @@
   (is (not (verify-password {}))))
 
 (deftest test-full-verify-user
-  (let [test-record (assoc (first records) :password-verify "password")]
+  (let [test-record (merge
+                      (dissoc (first records) :encrypted_password) 
+                      { :password "password", :password-verify "password" })]
     (is (= {} (full-verify-user test-record)))
     (is (= 1 (count (full-verify-user (assoc test-record :name "a")))))
     (is (= 1 (count (full-verify-user (assoc test-record :name "")))))

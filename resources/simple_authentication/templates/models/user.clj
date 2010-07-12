@@ -1,7 +1,8 @@
 (ns models.user
   (:use conjure.core.model.base
         clj-record.boot)
-  (:require [clojure.contrib.logging :as logging]))
+  (:require [clojure.contrib.logging :as logging]
+            [plugins.simple-authentication.password :as password]))
 
 (def minimum-user-name-length 3)
 (def minimum-password-length 6)
@@ -13,9 +14,18 @@
     (and string (>= (count string) length))))
 
 (defn
+#^{ :doc "Encrypts the password of the given user and returns the result in a user map." }
+  encrypt-password [user]
+  (if (and (contains? user :encrypted_password) (contains? user :salt))
+    user
+    (let [salt (password/create-salt)]
+      (merge (dissoc user :password) { :encrypted_password (password/encrypt-password-string (:password user) salt) 
+                                       :salt salt }))))
+
+(defn
 #^{ :doc "Called right before a user is saved. Makes sure only :id, :user, :password, and :is-admin are in the user." }
   user-before-save [user]
-  (select-keys user [:id :name :password :is_admin]))
+  (encrypt-password (select-keys user [:id :name :password :is_admin :encrypted_password :salt])))
 
 (clj-record.core/init-model
   (:validation
@@ -45,6 +55,12 @@ sequence." }
       (assoc errors :password-verify "The passwords you entered do not match."))))
 
 (defn
+  password? [user password]
+  (= (:encrypted_password user) (password/encrypt-password-string password (:salt user))))
+
+(defn
 #^{ :doc "Returns the user with the given name and password or nil if no user exists." }
   find-user [name password]
-  (find-record { :name name, :password password}))
+  (if-let [user (find-record { :name name })]
+    (if (password? user password)
+      user)))

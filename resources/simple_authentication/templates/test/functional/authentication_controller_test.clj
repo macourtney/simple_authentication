@@ -2,6 +2,7 @@
   (:use clojure.contrib.test-is)
   (:require [clojure.contrib.logging :as logging]
             [conjure.core.controller.util :as controller-util]
+            [conjure.core.migration.runner :as migration-runner]
             [conjure.core.server.request :as request]
             [conjure.core.server.server :as server]
             [fixture.user :as user-fixture]))
@@ -33,8 +34,8 @@
     (is (controller-util/call-controller))))
 
 (deftest test-save-user
-  (let [test-user { :name "test-user", :password "password", :is_admin 0 }
-        test-user-verify (assoc test-user :password-verify "password")
+  (let [test-user { :name "test-user", :is_admin 0 }
+        test-user-verify (merge test-user { :password "password", :password-verify "password"})
         save-user-request-map (assoc request-map :action "save-user")]
     (request/set-request-map (assoc save-user-request-map :params { :user test-user-verify })
       (is (controller-util/call-controller)))

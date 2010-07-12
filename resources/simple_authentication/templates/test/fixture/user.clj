@@ -3,7 +3,8 @@
 
 (def records [{ :id 1
                 :name "admin", 
-                :password "password", 
+                :encrypted_password "password",
+                :salt "0"
                 :is_admin 1 }])
 
 (defn fixture [function]
