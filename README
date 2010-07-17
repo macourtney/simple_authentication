@@ -1,19 +1,19 @@
 This project is a sample plugin for Conjure which provides a simple authentication scheme. You can create users, log in
 and out, and set certain users as admin.
 
-To install in your Conjure app, simply clone the git repository into your vendor/plugins directory. Once all the files
-are in place, run the following command from your apps root directory:
+To install in your Conjure app, simply add [simple-authentication "1.0.0"] to your Leiningen project.clj file then
+update the dependencies. Once all the files are in place, run the following command from your apps root directory:
 
-  ./run.bat script/plugin.clj install simple-authentication
+  lein conjure plugin install simple-authentication
 
 Simple authentication will generate some files and create a migration. The first thing you need to do is migrate your
 database. You can do that with the following command:
 
-  ./run.bat script/migrate.clj
+  lein conjure migrate
   
 If you need to remove simple authentication you can do so using the uninstall command:
 
-./run.bat script/plugin.clj install simple-authentication
+  lein conjure plugin uninstall simple-authentication
 
 However, you will need to migrate your database down to remove the users table before doing so, or your database will be
 out of synch. Alternatively, you can remove the users table manually.
