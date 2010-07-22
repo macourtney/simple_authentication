@@ -13,6 +13,12 @@
   (fn [string] 
     (and string (>= (count string) length))))
 
+(declare find-record)
+
+(defn
+  verify-unique-user [user-name]
+  (nil? (find-record { :name user-name })))
+
 (defn
 #^{ :doc "Encrypts the password of the given user and returns the result in a user map." }
   encrypt-password [user]
@@ -32,6 +38,9 @@
     (:name 
       (str "User name must be at least " minimum-user-name-length " characters long.")
       (verify-str-length minimum-user-name-length))
+    (:name 
+      (str "The given username already exists. Please choose another one.")
+      verify-unique-user)
     (:password 
       (str "Password must be at least " minimum-password-length " characters long.")
       (verify-str-length minimum-password-length)))
