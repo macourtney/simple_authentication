@@ -1,7 +1,7 @@
 (ns plugins.simple-authentication.login
   (:import [clojure.lang PersistentArrayMap]) 
   (:require [clojure.contrib.logging :as logging]
-            [conjure.core.model.session-store :as session-store] 
+            [conjure.core.model.session-store :as session-store]
             [models.user :as user]
             [config.session-config :as session-config]))
 
@@ -22,17 +22,15 @@ nil" }
   logged-in? [] 
   (session-key (session-store/retrieve)))
 
-
-
 (defmulti current-user type)
 
 (defmethod current-user String [user-id]
   (when user-id
-    (user/get-record { :id user-id }))) 
+    (user/find-record { :id user-id }))) 
 
 (defmethod current-user Integer [user-id]
   (when user-id
-    (user/get-record user-id)))
+    (user/find-record { :id user-id })))
 
 (defmethod current-user nil [_]
   nil)
