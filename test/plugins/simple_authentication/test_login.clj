@@ -1,14 +1,19 @@
 (ns plugins.simple-authentication.test-login
   (:use clojure.contrib.test-is)
-  (:require [plugins.simple-authentication.plugin :as plugin]))
+  (:require [plugins.simple-authentication.plugin :as plugin]
+            [conjure.core.server.server :as server]))
+
+(server/init)
 
 (plugin/install []) ; Create the user model file.
 
-(use 'plugins.simple-authentication.login) ; Must not be used before the user model file is created.
+(use 'plugins.simple-authentication.login)
 
 (defn init-plugin [test-fn]
-  (test-fn)
-  (plugin/uninstall []))
+  (try
+    (test-fn)
+    (finally
+      (plugin/uninstall []))))
 
 (use-fixtures :once init-plugin)
 

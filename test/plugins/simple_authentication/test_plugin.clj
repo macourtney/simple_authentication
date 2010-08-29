@@ -48,12 +48,15 @@
     (is (.exists destination-dir))
     (is (file-utils/recursive-delete destination-dir))))
 
+(defn file-does-not-exist-error [file]
+  (str "File " (.getPath file) " does not exist."))
+
 (defn file-exists? [file]
-  (is (.exists file) (str "File " (.getPath file) " does not exist.")))
+  (is (.exists file) (file-does-not-exist-error file)))
 
 (defn files-exist? [files]
   (doseq [file files]
-    (file-exists? file)))
+    (is (.exists file) (file-does-not-exist-error file))))
 
 (defn file-does-not-exist? [file]
   (is (not (.exists file)) (str "File " (.getPath file) " exists.")))
