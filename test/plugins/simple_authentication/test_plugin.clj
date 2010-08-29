@@ -3,7 +3,7 @@
   (:use clojure.contrib.test-is
         plugins.simple-authentication.plugin)
   (:require [conjure.core.binding.util :as binding-util]
-            [conjure.core.migration.util :as migration-util]
+            [drift.core :as migration-util]
             [conjure.core.test.builder :as test-builder]
             [conjure.core.util.file-utils :as file-utils]
             [conjure.core.util.loading-utils :as loading-utils]

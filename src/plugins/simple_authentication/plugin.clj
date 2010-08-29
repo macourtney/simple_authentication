@@ -14,8 +14,8 @@
             [conjure.core.util.file-utils :as file-utils]
             [conjure.core.util.loading-utils :as loading-utils]
             [conjure.core.view.util :as view-util]
-            [conjure.script.destroyers.migration-destroyer :as migration-destroyer]
-            [conjure.script.generators.migration-generator :as migration-generator]
+            [drift.destroyer :as migration-destroyer]
+            [drift.generator :as migration-generator]
             [plugins.simple-authentication.password :as password]))
 
 (def model-name "user")
@@ -151,7 +151,7 @@
 (defn
 #^{ :doc "Copies all of the model files to the appropriate places." }
   create-model-files []
-  (migration-generator/generate-migration-file migration-name (migration-up-content) (migration-down-content))
+  (migration-generator/generate-migration-file migration-name nil (migration-up-content) (migration-down-content))
   (copy-model-file)
   (copy-fixture-file)
   (copy-model-test-file))
