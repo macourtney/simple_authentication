@@ -5,9 +5,9 @@
   (:require [conjure.core.binding.util :as binding-util]
             [drift.core :as migration-util]
             [conjure.core.test.builder :as test-builder]
-            [conjure.core.util.file-utils :as file-utils]
-            [conjure.core.util.loading-utils :as loading-utils]
-            [conjure.core.util.string-utils :as string-utils]
+            [clojure.tools.file-utils :as file-utils]
+            [clojure.tools.loading-utils :as loading-utils]
+            [clojure.tools.string-utils :as string-utils]
             [conjure.core.view.util :as view-util]))
 
 (deftest test-migration-up-content
